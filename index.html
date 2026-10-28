@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="sv" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undead Shadow Priest Leveling Guide (WoW Classic / Era)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        shadow: {
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            900: '#2e1065',
+                        },
+                        holy: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            900: '#451a03',
+                        },
+                        darkbg: '#0f0e14',
+                        cardbg: '#171421',
+                        borderbg: '#29233b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #09080d;
+            color: #d1d5db;
+        }
+        .shadow-glow {
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.6), 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+        .box-glow-shadow {
+            box-shadow: 0 0 15px -3px rgba(168, 85, 247, 0.25);
+        }
+        .box-glow-holy {
+            box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.25);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0e14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #29233b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-shadow-500 selection:text-white">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-shadow-500 text-white px-5 py-3 rounded-lg shadow-xl font-bold flex items-center space-x-2">
+        <i class="fa-solid fa-check-circle"></i>
+        <span id="toast-message">Kopierat till urklipp!</span>
+    </div>
+
+    <!-- Header Section -->
+    <header class="relative bg-cardbg border-b border-borderbg py-6 px-4 sm:px-8 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-shadow-900/40 via-transparent to-holy-900/30 pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 relative z-10">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 rounded-full bg-black border-2 border-shadow-500 flex items-center justify-center text-shadow-400 text-2xl shadow-lg box-glow-shadow">
+                    <i class="fa-solid fa-ghost"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                        Undead Priest <span class="text-xs px-2 py-0.5 rounded bg-shadow-900/80 text-shadow-400 border border-shadow-500/40 uppercase font-mono">Dynamic Leveling 1-60</span>
+                    </h1>
+                    <p class="text-gray-400 text-xs mt-0.5">WoW Classic / Era / Hardcore Guide (Shadow Wand Specialist)</p>
+                </div>
+            </div>
+
+            <!-- Quick Info Badge -->
+            <div id="quick-status-badge" class="flex flex-wrap gap-2 text-xs font-semibold">
+                <!-- Dynamiskt status-piller visas här via JS -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Level Control Bar -->
+    <div class="sticky top-0 z-50 bg-black/90 backdrop-blur border-b border-borderbg px-4 sm:px-8 py-3 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 w-full lg:w-auto justify-between lg:justify-start">
+                <div class="flex items-center space-x-2">
+                    <button onclick="changeLevel(-1)" class="w-8 h-8 rounded bg-cardbg hover:bg-borderbg border border-borderbg text-gray-300 font-bold flex items-center justify-center transition active:scale-95">-1</button>
+                    <span class="text-xs font-bold text-gray-400">Level:</span>
+                    <span id="globalLevelText" class="text-2xl font-black text-shadow-400 font-mono w-10 text-center">60</span>
+                    <button onclick="changeLevel(1)" class="w-8 h-8 rounded bg-cardbg hover:bg-borderbg border border-borderbg text-gray-300 font-bold flex items-center justify-center transition active:scale-95">+1</button>
+                </div>
+                <!-- Milestone Quick-Buttons -->
+                <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                    <button onclick="setLevel(1)" class="px-2 py-1 text-xs rounded bg-darkbg border border-borderbg hover:border-shadow-500 text-gray-300 font-mono">L1</button>
+                    <button onclick="setLevel(10)" class="px-2 py-1 text-xs rounded bg-darkbg border border-borderbg hover:border-shadow-500 text-gray-300 font-mono">L10</button>
+                    <button onclick="setLevel(20)" class="px-2 py-1 text-xs rounded bg-darkbg border border-borderbg hover:border-shadow-500 text-holy-400 font-mono">L20</button>
+                    <button onclick="setLevel(40)" class="px-2 py-1 text-xs rounded bg-darkbg border border-borderbg hover:border-shadow-500 text-shadow-400 font-mono">L40</button>
+                    <button onclick="setLevel(60)" class="px-2 py-1 text-xs rounded bg-darkbg border border-borderbg hover:border-shadow-500 text-amber-400 font-mono">L60</button>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/2 flex items-center space-x-3">
+                <input type="range" id="globalLevelRange" min="1" max="60" value="60" class="w-full accent-shadow-500 cursor-pointer h-2 bg-cardbg rounded-lg border border-borderbg" oninput="setLevel(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-darkbg border-b border-borderbg px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex overflow-x-auto space-x-2 py-2.5 no-scrollbar">
+            <button onclick="switchTab('rotation')" id="tab-rotation" class="nav-tab active-tab px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition-all duration-150">
+                <i class="fa-solid fa-bolt text-purple-400"></i> <span>Spells & Rotation</span>
+            </button>
+            <button onclick="switchTab('talents')" id="tab-talents" class="nav-tab inactive-tab px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition-all duration-150">
+                <i class="fa-solid fa-sitemap text-shadow-400"></i> <span>Talents (Wand/Shadow Build)</span>
+            </button>
+            <button onclick="switchTab('gear')" id="tab-gear" class="nav-tab inactive-tab px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition-all duration-150">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> <span>Gear, Wands & Quests</span>
+            </button>
+            <button onclick="switchTab('professions')" id="tab-professions" class="nav-tab inactive-tab px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition-all duration-150">
+                <i class="fa-solid fa-hammer text-green-400"></i> <span>Professions & Crafting</span>
+            </button>
+            <button onclick="switchTab('wowforever')" id="tab-wowforever" class="nav-tab inactive-tab px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition-all duration-150">
+                <i class="fa-solid fa-map-location-dot text-yellow-400"></i> <span>Leveling Rutt (1-60)</span>
+            </button>
+            <button onclick="switchTab('macros')" id="tab-macros" class="nav-tab inactive-tab px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition-all duration-150">
+                <i class="fa-solid fa-terminal text-blue-400"></i> <span>Makron & Undead Tips</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-6 flex-grow w-full">
+
+        <!-- SECTION 1: ROTATION & SPELLS -->
+        <section id="sec-rotation" class="space-y-6">
+            <div class="bg-cardbg border border-borderbg p-5 rounded-xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-shadow-900 text-shadow-400 border border-shadow-500/30 uppercase">Aktuell Level-Fas</span>
+                    <h2 id="phase-title" class="text-xl font-bold text-white mt-1">Leveling Fas</h2>
+                    <p id="phase-desc" class="text-xs text-gray-400 mt-0.5">Spelstil och strategi för denna nivån...</p>
+                </div>
+                <div id="mana-status-badge" class="bg-darkbg border border-borderbg px-4 py-2.5 rounded-lg flex items-center space-x-3">
+                    <!-- Dynamic Mana & Buff Info -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Active Rotation Guide -->
+                <div class="lg:col-span-2 bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                    <h3 class="font-bold text-lg text-white border-b border-borderbg pb-3 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-bolt text-shadow-400"></i> Optimal Combat Rotation</span>
+                        <span id="rotation-badge" class="text-xs font-mono font-normal text-gray-400">Level <span class="current-lvl-span">60</span></span>
+                    </h3>
+                    <div id="active-rotation-list" class="space-y-2.5 text-sm">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Unlocked Spells at Current Level -->
+                <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                    <h3 class="font-bold text-lg text-white border-b border-borderbg pb-3 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-book-skull text-holy-400"></i> Tillgängliga Spells</span>
+                        <span class="text-xs font-mono text-gray-400" id="spell-count-badge">0 spells</span>
+                    </h3>
+                    <div id="unlocked-spells-list" class="space-y-2 max-h-[460px] overflow-y-auto pr-1">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TALENTS -->
+        <section id="sec-talents" class="space-y-6 hidden">
+            <div class="bg-cardbg border border-borderbg p-5 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sitemap text-shadow-400"></i> Shadow / Wand Leveling Talent Build
+                    </h2>
+                    <p class="text-gray-400 text-xs mt-1">
+                        Startar med 5/5 Wand Specialization & Spirit Tap i Discipline/Shadow för 0 downtime under leveling!
+                    </p>
+                </div>
+                <div id="latest-talent-note" class="bg-darkbg border border-shadow-500/40 p-3 rounded-lg text-xs max-w-md">
+                    <!-- Dynamic info on latest talent -->
+                </div>
+            </div>
+
+            <!-- Talent Trees -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Shadow Column -->
+                <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                    <div class="flex justify-between items-center border-b border-borderbg pb-3">
+                        <h3 class="font-bold text-base text-shadow-400 flex items-center gap-2">
+                            <i class="fa-solid fa-ghost"></i> Shadow Tree
+                        </h3>
+                        <span id="shadow-points" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-shadow-900/60 text-shadow-400 border border-shadow-500/30">0 Poäng</span>
+                    </div>
+                    <div class="space-y-2 text-sm" id="shadow-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Discipline Column -->
+                <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                    <div class="flex justify-between items-center border-b border-borderbg pb-3">
+                        <h3 class="font-bold text-base text-holy-400 flex items-center gap-2">
+                            <i class="fa-solid fa-sun"></i> Discipline Tree
+                        </h3>
+                        <span id="discipline-points" class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-holy-900/60 text-holy-400 border border-holy-500/30">0 Poäng</span>
+                    </div>
+                    <div class="space-y-2 text-sm" id="discipline-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: GEAR & WANDS -->
+        <section id="sec-gear" class="space-y-6 hidden">
+            <div class="bg-cardbg border border-borderbg p-5 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Utrustning, Quests & Wands
+                </h2>
+                <p class="text-gray-400 text-xs mt-1">
+                    Wands utgör över 50% av din totala skada under leveling! Här är din BiS Wand-tidslinje och Undead Priest uppdrag.
+                </p>
+            </div>
+
+            <!-- Early Game Focus Card -->
+            <div class="bg-cardbg border border-shadow-500/50 p-5 rounded-xl space-y-4 box-glow-shadow">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-borderbg pb-3">
+                    <div>
+                        <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-shadow-900 text-shadow-400 border border-shadow-500/30 uppercase">Priest Golden Rule</span>
+                        <h3 class="text-lg font-bold text-white mt-1">5-Sekunders-Regeln & Spirit Tap</h3>
+                    </div>
+                    <span class="text-xs font-mono text-gray-400">Spirit > Spirit > Spirit</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-3 bg-darkbg rounded-lg border border-borderbg space-y-1.5">
+                        <span class="font-bold text-shadow-400 block text-sm"><i class="fa-solid fa-hourglass-half"></i> 5-Second Rule (5SR)</span>
+                        <p class="text-gray-300 leading-relaxed">När du slutar casta spells börjar din naturliga mana regen efter 5 sekunder. Sluta casta vid 60% mob HP och skjuta Wand resten!</p>
+                    </div>
+                    <div class="p-3 bg-darkbg rounded-lg border border-borderbg space-y-1.5">
+                        <span class="font-bold text-holy-400 block text-sm"><i class="fa-solid fa-skull"></i> Spirit Tap Magic</span>
+                        <p class="text-gray-300 leading-relaxed">När du dödar en mob får du +100% Spirit och 100% mana regen även under combat i 15 sekunder. Du behöver nästan aldrig dricka!</p>
+                    </div>
+                    <div class="p-3 bg-darkbg rounded-lg border border-borderbg space-y-1.5">
+                        <span class="font-bold text-amber-400 block text-sm"><i class="fa-solid fa-wand-sparkles"></i> Wand Specialization (+25%)</span>
+                        <p class="text-gray-300 leading-relaxed">Talenten i Discipline ökar wandskadan med 25%. Gör att din wand slår hårdare än dina spells med 0 mana-kostnad!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Wand Banner -->
+            <div id="active-wand-banner" class="bg-cardbg border-2 border-amber-500/60 p-5 rounded-xl space-y-2 box-glow-holy">
+                <!-- Dynamiskt active wand kort -->
+            </div>
+
+            <!-- Full Wand Timeline -->
+            <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                <h3 class="font-bold text-base text-white border-b border-borderbg pb-3">Priest Wand Progression (1-60)</h3>
+                <div class="space-y-3" id="wand-timeline-list">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Undead Priest Specific Quests -->
+            <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                <h3 class="font-bold text-base text-white border-b border-borderbg pb-3 flex items-center justify-between">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-scroll text-amber-400"></i> Undead Priest Ras- & Klassquests</span>
+                </h3>
+                <div id="active-quests-list" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PROFESSIONS -->
+        <section id="sec-professions" class="space-y-6 hidden">
+            <div class="bg-cardbg border border-borderbg p-5 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-hammer text-green-400"></i> Professions & Priest Crafting
+                </h2>
+                <p class="text-gray-400 text-xs mt-1">
+                    Skräddarsy din egen wand och utrustning med Tailoring & Enchanting för en supersnabb start.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-cardbg border border-shadow-500/40 p-4 rounded-xl space-y-2 box-glow-shadow">
+                    <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-shadow-900 text-shadow-400 border border-shadow-500/30 uppercase">BiS Solo Leveling</span>
+                    <h3 class="font-bold text-white text-sm">Tailoring + Enchanting</h3>
+                    <p class="text-xs text-gray-400">Tillverka dina egna wands på level 5 & 13! Sy Shadoweave-gear på level 37+ för enorm skadeökning.</p>
+                </div>
+                <div class="bg-cardbg border border-borderbg p-4 rounded-xl space-y-2">
+                    <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-darkbg text-green-400 border border-borderbg uppercase">Självförsörjande</span>
+                    <h3 class="font-bold text-white text-sm">Herbalism + Alchemy</h3>
+                    <p class="text-xs text-gray-400">Brygg Mana Potions och Elixirs of Shadow Power / Wisdom för oavbruten farming.</p>
+                </div>
+                <div class="bg-cardbg border border-borderbg p-4 rounded-xl space-y-2">
+                    <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-darkbg text-red-400 border border-borderbg uppercase">Oumbärlig</span>
+                    <h3 class="font-bold text-white text-sm">First Aid (Secondary)</h3>
+                    <p class="text-xs text-gray-400">Spara din mana till skada! Använd bandages mellan kamper för att läka dig gratis.</p>
+                </div>
+            </div>
+
+            <!-- Tailoring Gear Checklist -->
+            <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-4">
+                <h3 class="font-bold text-lg text-white border-b border-borderbg pb-3">Priest Tailoring Craft Checklist</h3>
+                <div id="tailoring-checklist" class="space-y-3 text-xs">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: WOW FOREVER / LEVELING ROUTE -->
+        <section id="sec-wowforever" class="space-y-6 hidden">
+            <div class="bg-cardbg border border-yellow-500/40 p-5 rounded-xl shadow-lg box-glow-shadow">
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-yellow-400"></i> Undead Priest Leveling Rutt (1-60)
+                </h2>
+                <p class="text-xs text-gray-300 mt-1">
+                    Optimal zon-progression anpassad för Horde Undead Priest.
+                </p>
+            </div>
+
+            <div class="bg-cardbg border border-borderbg rounded-xl p-5 space-y-3 text-xs">
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg">
+                    <span class="font-bold text-shadow-400 text-sm">Level 1 - 10: Deathknell & Tirisfal Glades</span>
+                    <p class="text-gray-300 mt-1">Gör dina ras-quests i Brill. Lär dig **Touch of Weakness** vid Lvl 10 hos priest-tränaren i Undercity!</p>
+                </div>
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg">
+                    <span class="font-bold text-white text-sm">Level 10 - 20: Silverpine Forest & The Barrens</span>
+                    <p class="text-gray-300 mt-1">Skaffa din **Greater Magic Wand** vid level 13. Lås upp **Devouring Plague** (Undead priest exklusiv spell) vid Level 20!</p>
+                </div>
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg">
+                    <span class="font-bold text-white text-sm">Level 20 - 30: Hillsbrad Foothills & Thousand Needles</span>
+                    <p class="text-gray-300 mt-1">Gör Blackfathom Deeps (BFD) questen för **Gravestone Scepter** wanden vid lvl 24-27. Det fördubblar din leveling-hastighet!</p>
+                </div>
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg">
+                    <span class="font-bold text-shadow-400 text-sm">Level 40: SHADOWFORM!</span>
+                    <p class="text-gray-300 mt-1">Vid Level 40 låser du upp Shadowform (+15% Physical Damage Reduction & +15% Shadow Damage). Du är nu en fullfjädrad DPS-maskin.</p>
+                </div>
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg">
+                    <span class="font-bold text-amber-400 text-sm">Level 50 - 60: Western/Eastern Plaguelands & Winterspring</span>
+                    <p class="text-gray-300 mt-1">Mind Blast + SW:P + Mind Flay + Wand. Använd Vampiric Embrace för permanent self-healing under grinding.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: MACROS & UNDEAD TIPS -->
+        <section id="sec-macros" class="space-y-6 hidden">
+            <div class="bg-cardbg border border-borderbg p-5 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-terminal text-blue-400"></i> Priest Makron & Undead Synergier
+                </h2>
+                <p class="text-gray-400 text-xs mt-1">
+                    Makron för smidig spell-casting och ras-specifika tips för Undead Priests.
+                </p>
+            </div>
+
+            <!-- Macro Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Macro 1: Auto Wand Shoot (No Interrupt) -->
+                <div class="bg-cardbg border border-borderbg p-4 rounded-xl space-y-3 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-white text-sm">Auto-Wand Toggle (Avbryts ej)</h3>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-darkbg text-amber-400 border border-amber-500/30">Essential</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-2">Förhindrar att du stänger av Wand-skjutningen om du spammar knappen.</p>
+                        <pre class="bg-darkbg p-2.5 rounded text-xs font-mono text-gray-300 border border-borderbg overflow-x-auto" id="macro-1">#showtooltip Shoot
+/cast! Shoot</pre>
+                    </div>
+                    <button onclick="copyToClipboard('macro-1')" class="w-full bg-shadow-900/60 hover:bg-shadow-900 text-shadow-400 border border-shadow-500/30 font-bold py-1.5 rounded text-xs flex items-center justify-center gap-2 transition">
+                        <i class="fa-regular fa-copy"></i> Kopiera Makro
+                    </button>
+                </div>
+
+                <!-- Macro 2: Self Power Word: Shield -->
+                <div class="bg-cardbg border border-borderbg p-4 rounded-xl space-y-3 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-white text-sm">Self Power Word: Shield</h3>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-darkbg text-holy-400 border border-holy-500/30">Emergency Shield</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-2">Kastar sköld på dig själv oavsett vem du har som target.</p>
+                        <pre class="bg-darkbg p-2.5 rounded text-xs font-mono text-gray-300 border border-borderbg overflow-x-auto" id="macro-2">#showtooltip Power Word: Shield
+/cast [@player] Power Word: Shield</pre>
+                    </div>
+                    <button onclick="copyToClipboard('macro-2')" class="w-full bg-shadow-900/60 hover:bg-shadow-900 text-shadow-400 border border-shadow-500/30 font-bold py-1.5 rounded text-xs flex items-center justify-center gap-2 transition">
+                        <i class="fa-regular fa-copy"></i> Kopiera Makro
+                    </button>
+                </div>
+
+                <!-- Macro 3: Undead Devouring Plague Burst -->
+                <div class="bg-cardbg border border-borderbg p-4 rounded-xl space-y-3 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-white text-sm">Devouring Plague + Inner Focus</h3>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-darkbg text-shadow-400 border border-shadow-500/30">Undead Combo</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-2">Gör den svindyra Devouring Plague spellen GRATIS i mana via Inner Focus talenten!</p>
+                        <pre class="bg-darkbg p-2.5 rounded text-xs font-mono text-gray-300 border border-borderbg overflow-x-auto" id="macro-3">#showtooltip Devouring Plague
+/cast Inner Focus
+/cast Devouring Plague</pre>
+                    </div>
+                    <button onclick="copyToClipboard('macro-3')" class="w-full bg-shadow-900/60 hover:bg-shadow-900 text-shadow-400 border border-shadow-500/30 font-bold py-1.5 rounded text-xs flex items-center justify-center gap-2 transition">
+                        <i class="fa-regular fa-copy"></i> Kopiera Makro
+                    </button>
+                </div>
+
+                <!-- Macro 4: Mouseover Shadow Word: Pain -->
+                <div class="bg-cardbg border border-borderbg p-4 rounded-xl space-y-3 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-white text-sm">Mouseover Shadow Word: Pain</h3>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-darkbg text-blue-400 border border-blue-500/30">Multi-DoT</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mb-2">Lägger DoT på muspekarmålet utan att du byter nuvarande target.</p>
+                        <pre class="bg-darkbg p-2.5 rounded text-xs font-mono text-gray-300 border border-borderbg overflow-x-auto" id="macro-4">#showtooltip Shadow Word: Pain
+/cast [@mouseover,harm,nodead][] Shadow Word: Pain</pre>
+                    </div>
+                    <button onclick="copyToClipboard('macro-4')" class="w-full bg-shadow-900/60 hover:bg-shadow-900 text-shadow-400 border border-shadow-500/30 font-bold py-1.5 rounded text-xs flex items-center justify-center gap-2 transition">
+                        <i class="fa-regular fa-copy"></i> Kopiera Makro
+                    </button>
+                </div>
+            </div>
+
+            <!-- Undead Priest Specific Abilities Card -->
+            <div class="bg-cardbg border border-borderbg p-5 rounded-xl space-y-3">
+                <h3 class="font-bold text-base text-white border-b border-borderbg pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-skull text-shadow-400"></i> Undead Priest Ras-Spells
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div class="p-3 bg-darkbg rounded border border-borderbg space-y-1">
+                        <strong class="text-shadow-400 block"><i class="fa-solid fa-virus"></i> Devouring Plague (Lvl 20)</strong>
+                        <p class="text-gray-400">En extremt stark Shadow DoT som healas dig för 100% av skadan den gör. Kostar mycket mana, så kombinera med Inner Focus!</p>
+                    </div>
+                    <div class="p-3 bg-darkbg rounded border border-borderbg space-y-1">
+                        <strong class="text-holy-400 block"><i class="fa-solid fa-hand-fist"></i> Touch of Weakness (Lvl 10)</strong>
+                        <p class="text-gray-400">Buffar dig så att nästa meleeträff på dig gör Shadow-skada på fienden och minskar deras attack damage i 2 minuter.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-cardbg border-t border-borderbg py-5 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>WoW Classic / Era Dynamic Leveling Guide • Undead Shadow Priest Specialist</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentLevel = 60;
+
+        // PRIEST SPELLS DATABASE
+        const spellDatabase = [
+            { reqLvl: 1, name: "Smite", rank: "Rank 1", type: "Holy", desc: "Holy damage spell. Används före lvl 4." },
+            { reqLvl: 1, name: "Power Word: Fortitude", rank: "Rank 1", type: "Discipline", desc: "+Stamina buff. Ha alltid aktiv!" },
+            { reqLvl: 4, name: "Shadow Word: Pain", rank: "Rank 1", type: "Shadow", desc: "Din primära DoT! Lägg på varje mob." },
+            { reqLvl: 6, name: "Power Word: Shield", rank: "Rank 1", type: "Discipline", desc: "Absorberar skada och förhindrar cast interruption." },
+            { reqLvl: 10, name: "Mind Blast", rank: "Rank 1", type: "Shadow", desc: "Hög burst shadow damage spell." },
+            { reqLvl: 10, name: "Touch of Weakness", rank: "Undead Spell", type: "Shadow", desc: "Undead-exklusiv buff som skadar melee-angripare." },
+            { reqLvl: 12, name: "Renew", rank: "Rank 2", type: "Holy", desc: "HoT (Heal over Time) för smidig egen-healing." },
+            { reqLvl: 14, name: "Psychic Scream", rank: "Rank 1", type: "Shadow", desc: "AoE Fear för nödsituationer." },
+            { reqLvl: 20, name: "Mind Flay", rank: "Talent Lvl 20", type: "Shadow", desc: "Channeled Shadow-skada som saktar ner mobben med 50%." },
+            { reqLvl: 20, name: "Devouring Plague", rank: "Undead Spell", type: "Shadow", desc: "Kraftfull Undead DoT + Self Heal." },
+            { reqLvl: 40, name: "Shadowform", rank: "Talent Lvl 40", type: "Shadow", desc: "+15% Shadow Damage & +15% Physical Armor Reduction!" }
+        ];
+
+        // TALENTS DATA (Priest Wand / Shadow Hybrid Path)
+        const talentData = [
+            // Discipline (Wand Spec First)
+            { tree: 'discipline', level: 10, name: 'Wand Specialization (1/5)', desc: '+5% Wand Damage.' },
+            { tree: 'discipline', level: 11, name: 'Wand Specialization (2/5)', desc: '+10% Wand Damage.' },
+            { tree: 'discipline', level: 12, name: 'Wand Specialization (3/5)', desc: '+15% Wand Damage.' },
+            { tree: 'discipline', level: 13, name: 'Wand Specialization (4/5)', desc: '+20% Wand Damage.' },
+            { tree: 'discipline', level: 14, name: 'Wand Specialization (5/5)', desc: '+25% WAND DAMAGE! Maximal wand-skada uppnådd!' },
+
+            // Shadow Tree (Spirit Tap & Shadowform)
+            { tree: 'shadow', level: 15, name: 'Spirit Tap (1/5)', desc: '+20% Spirit efter killing blow.' },
+            { tree: 'shadow', level: 16, name: 'Spirit Tap (2/5)', desc: '+40% Spirit efter killing blow.' },
+            { tree: 'shadow', level: 17, name: 'Spirit Tap (3/5)', desc: '+60% Spirit efter killing blow.' },
+            { tree: 'shadow', level: 18, name: 'Spirit Tap (4/5)', desc: '+80% Spirit efter killing blow.' },
+            { tree: 'shadow', level: 19, name: 'Spirit Tap (5/5)', desc: '+100% SPIRIT & 100% MANA REGEN I 15 SEKUNDER EFTER DÖDAD MOB!' },
+            { tree: 'shadow', level: 20, name: 'Mind Flay (1/1)', desc: 'Låser upp Mind Flay!' },
+            { tree: 'shadow', level: 21, name: 'Improved Shadow Word: Pain (1/2)', desc: '+3s duration på SW:P.' },
+            { tree: 'shadow', level: 22, name: 'Improved Shadow Word: Pain (2/2)', desc: '+6s duration på SW:P.' },
+            { tree: 'shadow', level: 23, name: 'Shadow Focus (1/5)', desc: '-2% motstånd på Shadow Spells.' },
+            { tree: 'shadow', level: 24, name: 'Shadow Focus (2/5)', desc: '-4% motstånd på Shadow Spells.' },
+            { tree: 'shadow', level: 25, name: 'Shadow Focus (3/5)', desc: '-6% motstånd på Shadow Spells.' },
+            { tree: 'shadow', level: 26, name: 'Improved Mind Blast (1/5)', desc: '-0.5s Cooldown på Mind Blast.' },
+            { tree: 'shadow', level: 27, name: 'Improved Mind Blast (2/5)', desc: '-1.0s Cooldown på Mind Blast.' },
+            { tree: 'shadow', level: 28, name: 'Improved Mind Blast (3/5)', desc: '-1.5s Cooldown på Mind Blast.' },
+            { tree: 'shadow', level: 29, name: 'Improved Mind Blast (4/5)', desc: '-2.0s Cooldown på Mind Blast.' },
+            { tree: 'shadow', level: 30, name: 'Vampiric Embrace (1/1)', desc: 'Skadar fienden och läker hela gruppen/dig för 20% av din Shadow Damage!' },
+            { tree: 'shadow', level: 31, name: 'Shadow Weaving (1/5)', desc: '20% chans att ge +3% Shadow Damage debuff på målet.' },
+            { tree: 'shadow', level: 32, name: 'Shadow Weaving (2/5)', desc: '40% chans för Shadow debuff.' },
+            { tree: 'shadow', level: 33, name: 'Shadow Weaving (3/5)', desc: '60% chans för Shadow debuff.' },
+            { tree: 'shadow', level: 34, name: 'Shadow Weaving (4/5)', desc: '80% chans för Shadow debuff.' },
+            { tree: 'shadow', level: 35, name: 'Shadow Weaving (5/5)', desc: '100% chans! Stackar upp till +15% Shadow Damage på målet!' },
+            { tree: 'shadow', level: 36, name: 'Darkness (1/5)', desc: '+2% Shadow Damage.' },
+            { tree: 'shadow', level: 37, name: 'Darkness (2/5)', desc: '+4% Shadow Damage.' },
+            { tree: 'shadow', level: 38, name: 'Darkness (3/5)', desc: '+6% Shadow Damage.' },
+            { tree: 'shadow', level: 39, name: 'Darkness (4/5)', desc: '+8% Shadow Damage.' },
+            { tree: 'shadow', level: 40, name: 'Shadowform (1/1)', desc: 'SHADOWFORM! +15% Shadow Damage, -15% Physical damage taken!' }
+        ];
+
+        // WANDS DATABASE
+        const wandData = [
+            { minLvl: 1, maxLvl: 4, name: "Ingen Wand tillgänglig", dps: "0 DPS", source: "Använd Smite & Melee fram till Lvl 5", quality: "gray" },
+            { minLvl: 5, maxLvl: 12, name: "Lesser Magic Wand", dps: "11.3 DPS (+25% Spec = 14.1 DPS)", source: "Crafta via Enchanting eller köp på AH. Gigantisk boost för Priest!", quality: "green" },
+            { minLvl: 13, maxLvl: 26, name: "Greater Magic Wand", dps: "17.5 DPS (+25% Spec = 21.8 DPS)", source: "Enchanting / AH. Din huvudsakliga skada i Barrens.", quality: "green" },
+            { minLvl: 27, maxLvl: 45, name: "Gravestone Scepter", dps: "29.0 DPS (+25% Spec = 36.2 DPS)", source: "QUEST: Blackfathom Villainy (BFD Dungeon Quest). BÄSTA wanden för Priests!", quality: "blue" },
+            { minLvl: 46, maxLvl: 60, name: "Noxious Shooter / Wand of Eternal Light", dps: "50.0+ DPS", source: "Maraudon Dungeon drop eller High-level AH Wand.", quality: "purple" }
+        ];
+
+        // TAILORING CRAFTS
+        const tailoringCrafts = [
+            { reqLvl: 5, profLvl: 10, name: "Simple Linen Boots", stats: "+Stamina/Armor", reqs: "Linen Cloth", rec: "Bas-gear tidigt." },
+            { reqLvl: 13, profLvl: 70, name: "Greater Magic Wand Component", stats: "17.5 DPS Wand Material", reqs: "Essences", rec: "Sy/Damm-material för din Wand!" },
+            { reqLvl: 37, profLvl: 210, name: "Shadoweave Shoulders", stats: "+17 Shadow Damage", reqs: "Shadow Silk, Mageweave", rec: "Början på Shadoweave-settet för Shadow Priests!" },
+            { reqLvl: 38, profLvl: 215, name: "Shadoweave Robe", stats: "+21 Shadow Damage", reqs: "Shadow Silk", rec: "Gigantisk skadeökning för Mind Blast & SW:P!" }
+        ];
+
+        // QUESTS DATABASE
+        const questDatabase = [
+            { reqLvl: 10, name: "Touch of Weakness Racial Quest", area: "Undercity Priest Trainer", rewards: "Spell: Touch of Weakness", desc: "Prata med Father Lankester i Undercity för din exklusiva Undead Priest buff." },
+            { reqLvl: 20, name: "Devouring Plague Racial Quest", area: "Undercity", rewards: "Spell: Devouring Plague", desc: "Lås upp Undeads bästa Shadow DoT & Self-Heal spell." },
+            { reqLvl: 20, name: "Censer of Light Quest", area: "Barrens / Undercity", rewards: "Priest Robe (+Spirit)", desc: "Bra tidigt bröstplagg för Spirit regeneration." }
+        ];
+
+        // MAIN UPDATE FUNCTION
+        function setLevel(lvl) {
+            currentLevel = Math.min(60, Math.max(1, parseInt(lvl)));
+            
+            document.getElementById('globalLevelRange').value = currentLevel;
+            document.getElementById('globalLevelText').innerText = currentLevel;
+            document.querySelectorAll('.current-lvl-span').forEach(el => el.innerText = currentLevel);
+
+            updatePhaseHeader();
+            renderRotationSection();
+            renderTalentsSection();
+            renderGearSection();
+            renderProfessionsSection();
+        }
+
+        function changeLevel(delta) {
+            setLevel(currentLevel + delta);
+        }
+
+        function updatePhaseHeader() {
+            const phaseTitle = document.getElementById('phase-title');
+            const phaseDesc = document.getElementById('phase-desc');
+            const manaBadge = document.getElementById('mana-status-badge');
+            const badge = document.getElementById('quick-status-badge');
+
+            if (currentLevel < 10) {
+                phaseTitle.innerText = "Fas 1: Smite & Wand Start (Lvl 1-9)";
+                phaseDesc.innerText = "Kasta SW:Pain och skjut ner mobben med din wand. Håll Power Word: Fortitude aktiv.";
+                manaBadge.innerHTML = `<i class="fa-solid fa-sun text-holy-400 text-xl"></i><div><span class="text-xs font-bold text-white block">Buff: PW: Fortitude</span><span class="text-[10px] text-gray-400">Skaffa Wand vid level 5!</span></div>`;
+                badge.innerHTML = `<span class="px-3 py-1 rounded-full bg-darkbg border border-borderbg text-holy-400"><i class="fa-solid fa-baby"></i> Holy Starter</span>`;
+            } else if (currentLevel < 40) {
+                phaseTitle.innerText = "Fas 2: Wand Spec & Spirit Tap Engine (Lvl 10-39)";
+                phaseDesc.innerText = "Shield -> Mind Blast -> SW:Pain -> Mind Flay -> Wand till död. 100% Mana Regen aktiveras från Spirit Tap!";
+                manaBadge.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-xl"></i><div><span class="text-xs font-bold text-white block">Wand Spec 5/5 (+25%)</span><span class="text-[10px] text-gray-400">Spirit Tap ger 0 downtime</span></div>`;
+                badge.innerHTML = `<span class="px-3 py-1 rounded-full bg-darkbg border border-borderbg text-amber-400"><i class="fa-solid fa-bolt"></i> Wand Specialist</span>`;
+            } else {
+                phaseTitle.innerText = "Fas 3: Full Shadowform Mastery (Lvl 40-60)";
+                phaseDesc.innerText = "Shadowform (+15% Dmg) + Vampiric Embrace. Du gör enorm skada och läker dig själv konstant.";
+                manaBadge.innerHTML = `<i class="fa-solid fa-ghost text-shadow-400 text-xl"></i><div><span class="text-xs font-bold text-white block">Aktiv Form: Shadowform</span><span class="text-[10px] text-gray-400">+15% Shadow Dmg & Physical Reduction</span></div>`;
+                badge.innerHTML = `<span class="px-3 py-1 rounded-full bg-darkbg border border-borderbg text-shadow-400"><i class="fa-solid fa-skull"></i> Shadow God</span>`;
+            }
+        }
+
+        function renderRotationSection() {
+            const rotList = document.getElementById('active-rotation-list');
+            const spellList = document.getElementById('unlocked-spells-list');
+            
+            let steps = [];
+            
+            if (currentLevel < 5) {
+                steps = [
+                    { num: 1, title: "Buffa med PW: Fortitude", desc: "Ökar din max HP." },
+                    { num: 2, title: "Kasta SW: Pain", desc: "Lägg DoT på mobben." },
+                    { num: 3, title: "Smite / Melee", desc: "Avsluta med Smite eller stavslags-skada." }
+                ];
+            } else if (currentLevel < 20) {
+                steps = [
+                    { num: 1, title: "Power Word: Shield på dig själv", desc: "Förhindrar att dina spell-casts blir avbrutna." },
+                    { num: 2, title: "Mind Blast (Lvl 10+)", desc: "Öppna med din mest kraftfulla skade-spell." },
+                    { num: 3, title: "Shadow Word: Pain", desc: "Kasta DoT som tickar medan du skjuter." },
+                    { num: 4, title: "WAND TILL DÖD!", desc: "Skjuta med din Wand. Det kostar 0 mana och gör enorm skada tack vare 5/5 Wand Spec!" },
+                    { num: 5, title: "Spirit Tap Mana Buff", desc: "När mobben dör triggar Spirit Tap och fyller din mana inför nästa pull." }
+                ];
+            } else {
+                steps = [
+                    { num: 1, title: "Vampiric Embrace", desc: "Lägg på målet för permanent self-healing från all skada du gör." },
+                    { num: 2, title: "Mind Blast", desc: "Hög initial Shadow-burst." },
+                    { num: 3, title: "Shadow Word: Pain & Devouring Plague", desc: "Lägg båda Shadow DoTs på fienden." },
+                    { num: 4, title: "Mind Flay (Lvl 20 Talent)", desc: "Kasta Mind Flay för att sakta ner mobben." },
+                    { num: 5, title: "Wand Finisher", desc: "Avsluta sista 30% HP med din Wand för att aktivera 5-sekunders-regeln!" }
+                ];
+            }
+
+            rotList.innerHTML = steps.map(s => `
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-shadow-900 text-shadow-400 font-bold flex items-center justify-center text-xs border border-shadow-500/30 flex-shrink-0 mt-0.5">${s.num}</span>
+                    <div>
+                        <strong class="text-white text-xs block mb-0.5">${s.title}</strong>
+                        <p class="text-gray-400 text-[11px] leading-relaxed">${s.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            const unlockedSpells = spellDatabase.filter(sp => sp.reqLvl <= currentLevel);
+            document.getElementById('spell-count-badge').innerText = `${unlockedSpells.length} spells upplåsta`;
+
+            spellList.innerHTML = unlockedSpells.reverse().map(sp => `
+                <div class="p-2.5 bg-darkbg rounded border border-borderbg flex justify-between items-center text-xs">
+                    <div>
+                        <span class="font-bold text-white">${sp.name}</span>
+                        ${sp.rank ? `<span class="text-[10px] text-shadow-400 font-mono ml-1.5">${sp.rank}</span>` : ''}
+                        <p class="text-[10px] text-gray-400 mt-0.5">${sp.desc}</p>
+                    </div>
+                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-black text-gray-400 border border-borderbg flex-shrink-0 ml-2">Lvl ${sp.reqLvl}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderTalentsSection() {
+            const currentTalents = talentData.filter(t => t.level <= currentLevel);
+            const shadowTalents = currentTalents.filter(t => t.tree === 'shadow');
+            const discTalents = currentTalents.filter(t => t.tree === 'discipline');
+
+            document.getElementById('shadow-points').innerText = `${shadowTalents.length} Poäng`;
+            document.getElementById('discipline-points').innerText = `${discTalents.length} Poäng`;
+
+            const latestTalentNote = document.getElementById('latest-talent-note');
+            if (currentTalents.length > 0) {
+                const latest = currentTalents[currentTalents.length - 1];
+                latestTalentNote.innerHTML = `
+                    <span class="text-gray-400 block text-[10px] uppercase font-mono">Senaste Talent (Lvl ${latest.level}):</span>
+                    <strong class="text-shadow-400 text-xs">${latest.name}</strong>
+                    <p class="text-[11px] text-gray-300 mt-0.5">${latest.desc}</p>
+                `;
+            } else {
+                latestTalentNote.innerHTML = `<span class="text-gray-400 text-xs">Inga talent-poäng tillgängliga före Level 10.</span>`;
+            }
+
+            const shadowList = document.getElementById('shadow-list');
+            shadowList.innerHTML = shadowTalents.length === 0 ? `<p class="text-xs text-gray-500 italic">Inga poäng i Shadow ännu.</p>` : shadowTalents.map(t => `
+                <div class="p-2.5 bg-darkbg rounded border border-borderbg flex justify-between items-center text-xs">
+                    <div>
+                        <span class="font-bold text-shadow-400">${t.name}</span>
+                        <p class="text-[10px] text-gray-400 mt-0.5">${t.desc}</p>
+                    </div>
+                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-black text-gray-400 border border-borderbg flex-shrink-0 ml-2">Lvl ${t.level}</span>
+                </div>
+            `).join('');
+
+            const discList = document.getElementById('discipline-list');
+            discList.innerHTML = discTalents.length === 0 ? `<p class="text-xs text-gray-500 italic">Inga poäng i Discipline ännu.</p>` : discTalents.map(t => `
+                <div class="p-2.5 bg-darkbg rounded border border-borderbg flex justify-between items-center text-xs">
+                    <div>
+                        <span class="font-bold text-holy-400">${t.name}</span>
+                        <p class="text-[10px] text-gray-400 mt-0.5">${t.desc}</p>
+                    </div>
+                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-black text-gray-400 border border-borderbg flex-shrink-0 ml-2">Lvl ${t.level}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderGearSection() {
+            const wandBanner = document.getElementById('active-wand-banner');
+            const wandTimeline = document.getElementById('wand-timeline-list');
+            const activeWand = wandData.find(w => currentLevel >= w.minLvl && currentLevel <= w.maxLvl) || wandData[wandData.length - 1];
+
+            if (wandBanner) {
+                wandBanner.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-holy-900 text-holy-300 border border-holy-500/40 uppercase">Rekommenderad Wand för Level ${currentLevel}</span>
+                            <h3 class="text-xl font-extrabold text-white mt-1">${activeWand.name}</h3>
+                            <p class="text-xs text-gray-300 mt-1">${activeWand.source}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-lg font-black font-mono text-amber-400 bg-black/60 px-3 py-1.5 rounded-lg border border-amber-500/30 inline-block">${activeWand.dps}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (wandTimeline) {
+                wandTimeline.innerHTML = wandData.map(w => {
+                    const isActive = currentLevel >= w.minLvl && currentLevel <= w.maxLvl;
+                    return `
+                        <div class="p-3 bg-darkbg rounded-lg border transition ${isActive ? 'border-amber-500 ring-1 ring-amber-500/50' : 'border-borderbg opacity-60'} flex justify-between items-center text-xs">
+                            <div>
+                                <span class="font-bold ${isActive ? 'text-amber-400' : 'text-white'}">${w.name}</span>
+                                <span class="text-[10px] text-gray-400 font-mono ml-2">(Lvl ${w.minLvl}-${w.maxLvl})</span>
+                                <p class="text-[11px] text-gray-400 mt-0.5">${w.source}</p>
+                            </div>
+                            <span class="font-mono font-bold ${isActive ? 'text-amber-400' : 'text-gray-400'} ml-2">${w.dps}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const activeQuestsList = document.getElementById('active-quests-list');
+            const currentQuests = questDatabase.filter(q => q.reqLvl <= currentLevel);
+            activeQuestsList.innerHTML = currentQuests.map(q => `
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg flex justify-between items-start text-xs">
+                    <div>
+                        <span class="font-bold text-amber-400">${q.name}</span>
+                        <p class="text-shadow-400 font-semibold text-[11px]"><i class="fa-solid fa-gift"></i> ${q.rewards}</p>
+                        <p class="text-gray-400 text-[11px]">${q.desc}</p>
+                    </div>
+                    <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black text-gray-400 border border-borderbg">Lvl ${q.reqLvl}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderProfessionsSection() {
+            const tailList = document.getElementById('tailoring-checklist');
+            const unlockedCrafts = tailoringCrafts.filter(c => c.reqLvl <= currentLevel);
+            tailList.innerHTML = unlockedCrafts.map(c => `
+                <div class="p-3 bg-darkbg rounded-lg border border-borderbg space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-shadow-400 text-xs">${c.name}</span>
+                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black text-amber-400 border border-borderbg">Req Lvl ${c.reqLvl}</span>
+                    </div>
+                    <p class="text-gray-300 text-[11px]">${c.rec}</p>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active-tab', 'bg-shadow-900/80', 'text-shadow-400', 'border', 'border-shadow-500/50');
+                tab.classList.add('inactive-tab', 'text-gray-400');
+            });
+
+            const targetSec = document.getElementById('sec-' + tabName);
+            if(targetSec) targetSec.classList.remove('hidden');
+
+            const activeTabBtn = document.getElementById('tab-' + tabName);
+            if(activeTabBtn) {
+                activeTabBtn.classList.remove('inactive-tab', 'text-gray-400');
+                activeTabBtn.classList.add('active-tab', 'bg-shadow-900/80', 'text-shadow-400', 'border', 'border-shadow-500/50');
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Makro kopierat till urklipp!");
+            } catch (err) {
+                showToast("Kunde inte kopiera automatisk.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.onload = function() {
+            setLevel(60);
+        }
+    </script>
+</body>
+</html>
